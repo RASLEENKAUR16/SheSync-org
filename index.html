@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SheSync</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fde7f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #f06292;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      color: #d81b60;
+      font-size: 18px;
+    }
+
+    label {
+      display: block;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: #f06292;
+      color: white;
+      border: none;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #ec407a;
+    }
+
+    .output {
+      margin-top: 10px;
+      background: #fce4ec;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌸 SheSync</h1>
+    <p>Track your cycle, water, mood, and sleep daily</p>
+  </header>
+
+  <div class="container">
+
+    <!-- Menstrual Tracker -->
+    <div class="card">
+      <h2>Menstrual Cycle Tracker</h2>
+      <label for="lastPeriod">Last Period Date:</label>
+      <input type="date" id="lastPeriod">
+
+      <label for="cycleLength">Average Cycle Length (days):</label>
+      <input type="number" id="cycleLength" placeholder="e.g. 28">
+
+      <button onclick="calculateNextPeriod()">Calculate Next Period</button>
+      <div id="periodResult" class="output"></div>
+    </div>
+
+    <!-- Water Intake Tracker -->
+    <div class="card">
+      <h2>Water Intake Tracker</h2>
+      <label for="glasses">Number of Glasses Drunk Today:</label>
+      <input type="number" id="glasses" placeholder="e.g. 5">
+      <button onclick="trackWater()">Check Progress</button>
+      <div id="waterResult" class="output"></div>
+    </div>
+
+    <!-- Mood Tracker -->
+    <div class="card">
+      <h2>Mood Tracker</h2>
+      <label for="mood">How are you feeling today?</label>
+      <select id="mood">
+        <option value="">Select mood</option>
+        <option>😊 Happy</option>
+        <option>😐 Okay</option>
+        <option>😞 Sad</option>
+        <option>😠 Angry</option>
+        <option>😴 Tired</option>
+      </select>
+      <button onclick="saveMood()">Save Mood</button>
+      <div id="moodResult" class="output"></div>
+    </div>
+
+    <!-- Sleep Tracker -->
+    <div class="card">
+      <h2>Sleep Tracker</h2>
+      <label for="sleepHours">Hours Slept Last Night:</label>
+      <input type="number" id="sleepHours" placeholder="e.g. 7">
+      <button onclick="checkSleep()">Check Sleep Quality</button>
+      <div id="sleepResult" class="output"></div>
+    </div>
+
+  </div>
+
+  <script>
+    function calculateNextPeriod() {
+      const lastDate = document.getElementById("lastPeriod").value;
+      const cycle = parseInt(document.getElementById("cycleLength").value);
+      const output = document.getElementById("periodResult");
+
+      if (!lastDate || !cycle) {
+        output.innerText = "Please fill in both fields.";
+        return;
+      }
+
+      const last = new Date(lastDate);
+      const next = new Date(last);
+      next.setDate(last.getDate() + cycle);
+
+      output.innerText = "Your next period is expected around: " + next.toDateString();
+    }
+
+    function trackWater() {
+      const glasses = parseInt(document.getElementById("glasses").value);
+      const output = document.getElementById("waterResult");
+
+      if (!glasses) {
+        output.innerText = "Please enter number of glasses.";
+        return;
+      }
+
+      if (glasses < 8) {
+        output.innerText = "You drank " + glasses + " glasses. Try to drink more water!";
+      } else {
+        output.innerText = "Great job! You've reached your daily goal!";
+      }
+    }
+
+    function saveMood() {
+      const mood = document.getElementById("mood").value;
+      const output = document.getElementById("moodResult");
+      if (!mood) {
+        output.innerText = "Please select your mood.";
+        return;
+      }
+      output.innerText = "Mood saved: " + mood;
+    }
+
+    function checkSleep() {
+      const hours = parseInt(document.getElementById("sleepHours").value);
+      const output = document.getElementById("sleepResult");
+
+      if (!hours) {
+        output.innerText = "Please enter your sleep hours.";
+        return;
+      }
+
+      if (hours < 6) {
+        output.innerText = "You slept " + hours + " hours. Try to get more rest!";
+      } else if (hours <= 8) {
+        output.innerText = "Good sleep! You slept " + hours + " hours.";
+      } else {
+        output.innerText = "You slept " + hours + " hours. That’s plenty!";
+      }
+    }
+  </script>
+
+</body>
+</html>
