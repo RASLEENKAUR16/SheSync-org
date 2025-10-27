@@ -9,11 +9,10 @@
       font-family: Arial, sans-serif;
       background-color: #fde7f0;
       margin: 0;
-      padding: 0;
     }
 
     header {
-      background-color: blue;
+      background-color: #f06292;
       color: white;
       text-align: center;
       padding: 15px;
@@ -30,46 +29,84 @@
       background: white;
       border-radius: 10px;
       padding: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    h2 {
-      color: #d81b60;
-      font-size: 18px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
     }
 
     label {
       display: block;
-      margin-top: 8px;
+      margin-top: 10px;
       font-size: 14px;
+      text-align: left;
+      margin-left: 15%;
     }
 
-    input, select, button {
-      width: 100%;
+    /* Smaller and centered input boxes */
+    input, select {
+      width: 70%;
       padding: 8px;
-      margin-top: 5px;
       border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: 8px;
+      margin-top: 5px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
 
+    /* Buttons */
     button {
       background-color: #f06292;
       color: white;
       border: none;
-      margin-top: 10px;
+      border-radius: 8px;
+      padding: 10px;
+      width: 70%;
+      display: block;
+      margin: 15px auto;
       cursor: pointer;
+      font-size: 16px;
     }
 
     button:hover {
       background-color: #ec407a;
     }
 
-    .output {
-      margin-top: 10px;
-      background: #fce4ec;
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 14px;
+    /* Records Section */
+    .records {
+      padding: 20px;
+      text-align: center;
+    }
+
+    table {
+      width: 90%;
+      margin: 0 auto;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #f8bbd0;
+    }
+
+    /* Refresh button */
+    #refreshBtn {
+      background-color: #d81b60;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-top: 15px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    #refreshBtn:hover {
+      background-color: #ad1457;
     }
   </style>
 </head>
@@ -77,121 +114,102 @@
 
   <header>
     <h1>🌸 SheSync</h1>
-    <p>Track your cycle, water, mood, and sleep daily</p>
+    <p>Track your menstrual cycle, water intake, mood, and sleep</p>
   </header>
 
-  <div class="container">
-
-    <!-- Menstrual Tracker -->
+  <form id="wellnessForm" class="container">
     <div class="card">
-      <h2>Menstrual Cycle Tracker</h2>
-      <label for="lastPeriod">Last Period Date:</label>
-      <input type="date" id="lastPeriod">
+      <h2>Menstrual Cycle</h2>
+      <label>Last Period Date:</label>
+      <input type="date" id="lastPeriod" required>
 
-      <label for="cycleLength">Average Cycle Length (days):</label>
-      <input type="number" id="cycleLength" placeholder="e.g. 28">
-
-      <button onclick="calculateNextPeriod()">Calculate Next Period</button>
-      <div id="periodResult" class="output"></div>
+      <label>Cycle Length (days):</label>
+      <input type="number" id="cycleLength" placeholder="e.g. 28" required>
     </div>
 
-    <!-- Water Intake Tracker -->
     <div class="card">
-      <h2>Water Intake Tracker</h2>
-      <label for="glasses">Number of Glasses Drunk Today:</label>
-      <input type="number" id="glasses" placeholder="e.g. 5">
-      <button onclick="trackWater()">Check Progress</button>
-      <div id="waterResult" class="output"></div>
+      <h2>Water Intake</h2>
+      <label>Glasses Drunk Today:</label>
+      <input type="number" id="glasses" placeholder="e.g. 6" required>
     </div>
 
-    <!-- Mood Tracker -->
     <div class="card">
       <h2>Mood Tracker</h2>
-      <label for="mood">How are you feeling today?</label>
-      <select id="mood">
-        <option value="">Select mood</option>
+      <label>Your Mood:</label>
+      <select id="mood" required>
+        <option value="">Select</option>
         <option>😊 Happy</option>
         <option>😐 Okay</option>
         <option>😞 Sad</option>
         <option>😠 Angry</option>
         <option>😴 Tired</option>
       </select>
-      <button onclick="saveMood()">Save Mood</button>
-      <div id="moodResult" class="output"></div>
     </div>
 
-    <!-- Sleep Tracker -->
     <div class="card">
       <h2>Sleep Tracker</h2>
-      <label for="sleepHours">Hours Slept Last Night:</label>
-      <input type="number" id="sleepHours" placeholder="e.g. 7">
-      <button onclick="checkSleep()">Check Sleep Quality</button>
-      <div id="sleepResult" class="output"></div>
+      <label>Hours Slept:</label>
+      <input type="number" id="sleepHours" placeholder="e.g. 7" required>
     </div>
 
-  </div>
+    <button type="submit">Save Today's Data</button>
+  </form>
+
+  <section class="records">
+    <h2>🩷 Recent Entries</h2>
+    <table id="recordsTable">
+      <tr>
+        <th>Date</th>
+        <th>Last Period</th>
+        <th>Cycle</th>
+        <th>Water</th>
+        <th>Mood</th>
+        <th>Sleep</th>
+      </tr>
+    </table>
+
+    <button id="refreshBtn">🔄 Refresh Data</button>
+  </section>
 
   <script>
-    function calculateNextPeriod() {
-      const lastDate = document.getElementById("lastPeriod").value;
-      const cycle = parseInt(document.getElementById("cycleLength").value);
-      const output = document.getElementById("periodResult");
+    const form = document.getElementById('wellnessForm');
+    const table = document.getElementById('recordsTable');
+    const refreshBtn = document.getElementById('refreshBtn');
 
-      if (!lastDate || !cycle) {
-        output.innerText = "Please fill in both fields.";
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const date = new Date().toLocaleString();
+      const lastPeriod = document.getElementById('lastPeriod').value;
+      const cycleLength = document.getElementById('cycleLength').value;
+      const glasses = document.getElementById('glasses').value;
+      const mood = document.getElementById('mood').value;
+      const sleepHours = document.getElementById('sleepHours').value;
+
+      if (!lastPeriod || !cycleLength || !glasses || !mood || !sleepHours) {
+        alert('Please fill all fields!');
         return;
       }
 
-      const last = new Date(lastDate);
-      const next = new Date(last);
-      next.setDate(last.getDate() + cycle);
+      const row = table.insertRow();
+      row.insertCell(0).innerText = date;
+      row.insertCell(1).innerText = lastPeriod;
+      row.insertCell(2).innerText = cycleLength;
+      row.insertCell(3).innerText = glasses;
+      row.insertCell(4).innerText = mood;
+      row.insertCell(5).innerText = sleepHours;
 
-      output.innerText = "Your next period is expected around: " + next.toDateString();
-    }
+      form.reset();
+    });
 
-    function trackWater() {
-      const glasses = parseInt(document.getElementById("glasses").value);
-      const output = document.getElementById("waterResult");
-
-      if (!glasses) {
-        output.innerText = "Please enter number of glasses.";
-        return;
+    // Refresh button clears all table rows except header
+    refreshBtn.addEventListener('click', function() {
+      const rows = table.rows.length;
+      while (table.rows.length > 1) {
+        table.deleteRow(1);
       }
-
-      if (glasses < 8) {
-        output.innerText = "You drank " + glasses + " glasses. Try to drink more water!";
-      } else {
-        output.innerText = "Great job! You've reached your daily goal!";
-      }
-    }
-
-    function saveMood() {
-      const mood = document.getElementById("mood").value;
-      const output = document.getElementById("moodResult");
-      if (!mood) {
-        output.innerText = "Please select your mood.";
-        return;
-      }
-      output.innerText = "Mood saved: " + mood;
-    }
-
-    function checkSleep() {
-      const hours = parseInt(document.getElementById("sleepHours").value);
-      const output = document.getElementById("sleepResult");
-
-      if (!hours) {
-        output.innerText = "Please enter your sleep hours.";
-        return;
-      }
-
-      if (hours < 6) {
-        output.innerText = "You slept " + hours + " hours. Try to get more rest!";
-      } else if (hours <= 8) {
-        output.innerText = "Good sleep! You slept " + hours + " hours.";
-      } else {
-        output.innerText = "You slept " + hours + " hours. That’s plenty!";
-      }
-    }
+      alert('Data cleared! Ready to start fresh 🌸');
+    });
   </script>
 
 </body>
